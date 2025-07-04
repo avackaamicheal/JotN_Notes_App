@@ -45,4 +45,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    public function teams(){
+
+        return $this->belongsToMany(Team::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    public function ownedTeams(){
+
+        return $this->hasMany(Team::class, 'created_by');
+    }
 }
