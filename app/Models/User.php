@@ -58,4 +58,15 @@ class User extends Authenticatable
 
         return $this->hasMany(Team::class, 'created_by');
     }
+
+    public function notes(){
+
+        return $this->hasMany(Note::class);
+
+    }
+
+    public function collaraborations(){
+
+        return $this->belongsToMany(NoteCollaborator::class, 'notes_collaborators');
+    }
 }

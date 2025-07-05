@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 
@@ -21,13 +22,13 @@ Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
 
-Route::get('/teams/join', function(){
-    return view('teams.join');
-})->name('join');
+Route::middleware(['auth'])->group(function () {
+    Route::resource('teams', TeamController::class);
+});
 
-Route::get('/teams/create', function(){
-    return view('teams.create');
-})->name('create');
+
+Route::get('/teams/join', [TeamController::class, 'showJoinForm'])->name('join');
+Route::post('/teams/join', [TeamController::class, 'join'])->name('teams.join');
 
 
 

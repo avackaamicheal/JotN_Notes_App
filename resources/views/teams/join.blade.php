@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Join Team</h1>
-    <form method="POST">
+    <form method="POST" action="{{ route('teams.join') }}">
     @csrf
     <label for="">Enter your invite code:</label>
     <input type="text" name="invite_code" placeholder="Enter Invite Code" required>
