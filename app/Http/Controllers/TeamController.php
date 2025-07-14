@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
+
 use App\Models\Team;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class TeamController extends Controller
 {
@@ -14,9 +16,13 @@ class TeamController extends Controller
      */
     public function index()
     {
-        $teams = Auth::user()->teams;
+        $user = Auth::user();
 
-        return view('teams.index', compact('teams'));
+        $ownedTeams = $user->teams()->wherePivot('role', 'owner')->get();
+
+        $joinedTeams = $user->teams()->wherePivot('role', 'member')->get();
+
+        return view('teams.index', compact('ownedTeams', 'joinedTeams'));
     }
 
     /**
@@ -32,11 +38,15 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
+    ]);
 
         $team = Team::create([
             'name' => $request->name,
-            'owner_id'=> Auth::id(),
+            'description' => $request->description,
+            'created_by'=> Auth::id(),
             'invite_code'=> Str::slug($request->name). '-' . Str::random(8),
         ]);
 
@@ -52,7 +62,9 @@ class TeamController extends Controller
     {
         $this->authorizeTeamAccess($team);
 
-        return view('teams.show', compact('teams'));
+        $notes = $team->notes()->latest()->get();
+
+        return view('teams.show', compact('teams', 'notes'));
 
     }
 
@@ -116,14 +128,20 @@ class TeamController extends Controller
             'invite_code' => 'required|string|exists:teams,invite_code',
         ]);
 
+        // This should return a team
         $team = Team::where('invite_code', $request->invite_code)->first();
 
+
+
+        // Check if user is already a member
         if ($team->users()->where('user_id', Auth::id())->exists()) {
             return redirect()->route('teams.index')->with('info', 'You are already a member of this team.');
         }
 
+        // Attach user as a member
         $team->users()->attach(Auth::id(), ['role' => 'Member']);
 
-        return redirect()->route('teams.show', $team)->with('success', 'You’ve joined the team!');
+        // Redirect to team list or team page
+        return redirect()->route('teams.index')->with('success', 'You’ve joined the team!');
     }
 }

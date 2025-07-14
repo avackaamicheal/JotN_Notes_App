@@ -1,34 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/dashboard', function(){
-    return view('dashboard');
-})->name('dashboard');
 
 Route::get('/register', [RegisterController::class,'create'])->name('register');
 Route::post('/register', [RegisterController::class,'store'])->name('register.store');
 
-Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::get('/', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+Route::post('/logout', [LogoutController::class, 'destroy'])
+    ->middleware('auth')->name('logout');
+
+
+
+Route::get('/teams/join', [TeamController::class, 'showJoinForm'])->name('teams.join');
+Route::post('/teams/join', [TeamController::class, 'join'])->name('teams.join.submit');
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('teams', TeamController::class);
+    Route::resource('/teams', TeamController::class);
+
+    Route::prefix('teams/{team}')->name('teams.')->group(function () {
+        Route::resource('notes', NoteController::class);
+    });
 });
-
-
-Route::get('/teams/join', [TeamController::class, 'showJoinForm'])->name('join');
-Route::post('/teams/join', [TeamController::class, 'join'])->name('teams.join');
-
-
 

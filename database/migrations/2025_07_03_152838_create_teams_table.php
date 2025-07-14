@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class,'created_by')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('description');
-            $table->string('invite_code')->unique();
+            $table->string('invite_code')->nullable()->unique();
             $table->timestamps();
         });
     }

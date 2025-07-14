@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
-    protected $fillable = ['title', 'content', 'note_id', 'user_id'];
+    protected $fillable = ['team_id', 'author_id', 'title', 'content'];
 
 
     public function team(){
 
-        return $this->belongsToMany(Team::class);
+        return $this->belongsTo(Team::class);
     }
 
 
     public function author(){
 
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function collaborators(){

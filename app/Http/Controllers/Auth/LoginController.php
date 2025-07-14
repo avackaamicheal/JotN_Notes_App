@@ -23,7 +23,7 @@ class LoginController extends Controller
         if (Auth::attempt($validatedData, $remember)) {
 
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            return redirect()->intended('teams');
 
 
             return back()
