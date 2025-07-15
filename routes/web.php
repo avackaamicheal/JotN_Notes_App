@@ -31,6 +31,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('teams/{team}')->name('teams.')->group(function () {
         Route::resource('notes', NoteController::class);
+        Route::get('members', [TeamController::class, 'members'])->name('members.index');
+        Route::post('members/invite', [TeamController::class, 'invite'])->name('members.invite');
+        Route::delete('members/{user}', [TeamController::class, 'remove'])->name('members.remove');
     });
 });
 

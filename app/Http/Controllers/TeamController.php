@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -105,12 +106,13 @@ class TeamController extends Controller
         return redirect()->route('teams.index')->with('sucess', 'team deleted');
     }
 
+    // authorize team access
      protected function authorizeTeamAccess(Team $team)
     {
 
     $role = $team->users()->where('user_id', Auth::id())->first()?->pivot->role;
 
-    if ($role !== 'Owner') {
+    if ($role !== 'owner') {
         abort(403, 'Only team owners can perform this action.');
     }
 
@@ -144,4 +146,43 @@ class TeamController extends Controller
         // Redirect to team list or team page
         return redirect()->route('teams.index')->with('success', 'You’ve joined the team!');
     }
+
+    public function members(Team $team)
+    {
+        $this->authorizeTeamAccess($team);
+        $members = $team->users;
+        return view('teams.members', compact('team', 'members'));
+    }
+
+        public function invite(Request $request, Team $team)
+    {
+        $this->authorizeTeamAccess($team);
+
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if ($team->users()->where('user_id', $user->id)->exists()) {
+            return back()->with('info', 'User is already a member.');
+        }
+
+        $team->users()->attach($user->id, ['role' => 'Member']);
+
+        return back()->with('success', 'User invited successfully.');
+    }
+
+    public function remove(Team $team, User $user, User $me)
+    {
+        $this->authorizeTeamAccess($team);
+
+        if ($user->id === $team->created_by) {
+            return back()->with('error', 'Cannot remove the team owner.');
+        }
+
+        $team->users()->detach($user->id);
+
+        return back()->with('success', 'Member removed.');
+}
 }

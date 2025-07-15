@@ -34,6 +34,9 @@
                             </div>
                         </a>
                     </div>
+                     <a href="{{ route('teams.members.index', $team->id) }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-plus mr-2"></i>See teams
+                        </a>
                 @endforeach
             </div>
 
@@ -59,6 +62,9 @@
                             </div>
                         </a>
                     </div>
+                    <a href="{{ route('teams.members.index', $team->id) }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-plus mr-2"></i>See teams
+                        </a>
                 @endforeach
             </div>
         </div>

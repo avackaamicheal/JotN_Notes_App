@@ -13,7 +13,8 @@
 
     <!-- Header -->
     <header class="bg-white shadow-sm py-4 px-6">
-        {{-- // flash message --}}
+        
+        {{-- flash message --}}
         <x-flash_message></x-flash_message>
 
 
