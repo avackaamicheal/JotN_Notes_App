@@ -54,11 +54,12 @@
                     </p>
                 </div>
             </div>
-            @can('inviteMembers', $team)
-            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                <i class="fas fa-user-plus mr-2"></i>Invite Members
-            </button>
-            @endcan
+
+            @if (auth()->user()->teams->find($team->id)?->pivot->role === 'owner')
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" onclick="openInviteModal()">
+                    <i class="fas fa-user-plus mr-2"></i>Invite Members
+                </button>
+            @endif
         </div>
 
         <!-- Members Table -->
@@ -108,13 +109,11 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    @if ($member->id !== $team->created_by)
-                                        @can('remove', [$team, $member])
+                                    @if ($member->pivot->role !== 'owner')
                                         <button onclick="confirmRemoveMember({{ $member->id }}, '{{ $member->name }}')"
                                             class="text-red-600 hover:text-red-900">
                                             <i class="fas fa-user-minus"></i>
                                         </button>
-                                        @endcan
                                     @endif
                                 </div>
                             </td>
@@ -153,13 +152,6 @@
                                             <p class="mt-2 text-sm text-gray-500">
                                                 Invite multiple members by entering their email addresses.
                                             </p>
-                                        </div>
-                                        <div>
-                                            <label for="role" class="block text-sm font-medium text-gray-700 text-left">Role</label>
-                                            <select id="role" name="role" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required>
-                                                <option value="member">Member</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -219,5 +211,29 @@
 
     </div>
 </div>
+<script>
+    // Invite Modal Functions
+    function openInviteModal() {
+        document.getElementById('inviteModal').classList.remove('hidden');
+    }
+
+    function closeInviteModal() {
+        document.getElementById('inviteModal').classList.add('hidden');
+    }
+
+    // Remove Member Functions
+    function confirmRemoveMember(memberId, memberName) {
+        document.getElementById('removeMemberName').textContent = memberName;
+
+        const form = document.getElementById('removeForm');
+        form.action = `/teams/{{ $team->id }}/members/${memberId}`;
+
+        document.getElementById('removeModal').classList.remove('hidden');
+    }
+
+    function closeRemoveModal() {
+        document.getElementById('removeModal').classList.add('hidden');
+    }
+</script>
 </x-layout>
 

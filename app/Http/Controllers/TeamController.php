@@ -7,7 +7,6 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class TeamController extends Controller
@@ -162,7 +161,7 @@ class TeamController extends Controller
             'email' => 'required|email|exists:users,email'
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
         if ($team->users()->where('user_id', $user->id)->exists()) {
             return back()->with('info', 'User is already a member.');
@@ -173,7 +172,7 @@ class TeamController extends Controller
         return back()->with('success', 'User invited successfully.');
     }
 
-    public function remove(Team $team, User $user, User $me)
+    public function remove(Team $team, User $user)
     {
         $this->authorizeTeamAccess($team);
 
