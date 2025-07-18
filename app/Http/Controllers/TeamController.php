@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Models\TeamInvite;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -153,24 +154,6 @@ class TeamController extends Controller
         return view('teams.members', compact('team', 'members'));
     }
 
-        public function invite(Request $request, Team $team)
-    {
-        $this->authorizeTeamAccess($team);
-
-        $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if ($team->users()->where('user_id', $user->id)->exists()) {
-            return back()->with('info', 'User is already a member.');
-        }
-
-        $team->users()->attach($user->id, ['role' => 'Member']);
-
-        return back()->with('success', 'User invited successfully.');
-    }
 
     public function remove(Team $team, User $user)
     {
@@ -183,5 +166,29 @@ class TeamController extends Controller
         $team->users()->detach($user->id);
 
         return back()->with('success', 'Member removed.');
-}
+    }
+
+    public function acceptInvite($token)
+{
+    $invite = TeamInvite::where('token', $token)->firstOrFail();
+
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('info', 'Please log in to accept the invite.');
+    }
+
+    $user = Auth::user();
+
+    // Prevent duplicate join
+    if ($invite->team->users()->where('user_id', $user->id)->exists()) {
+        return redirect()->route('teams.index')->with('info', 'You are already a member.');
+    }
+
+    $invite->team->users()->attach($user->id, ['role' => 'member']);
+
+    // Delete invite after use
+    $invite->delete();
+
+    return redirect()->route('teams.index')->with('success', 'You have joined the team!');
+    }
+
 }
