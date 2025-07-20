@@ -10,6 +10,6 @@ class TeamInvite extends Model
 
     public function team()
     {
-        $this->belongsTo(Team::class);
+        return $this->belongsTo(Team::class);
     }
 }

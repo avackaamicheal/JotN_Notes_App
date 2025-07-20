@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\Team;
+use App\Models\TeamInvite;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,12 +15,16 @@ class InviteToTeam extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $team;
+    public $link;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(Team $team,  string $link)
     {
-        //
+        $this->team = $team;
+        $this->link = $link;
     }
 
     /**
@@ -27,7 +33,7 @@ class InviteToTeam extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Invite To Team',
+            subject: "Invitation to join {$this->team->name}",
         );
     }
 
@@ -38,6 +44,10 @@ class InviteToTeam extends Mailable
     {
         return new Content(
             view: 'emails.invite',
+            with: [
+                'team'=>$this->team,
+                'link'=>$this->link
+            ]
         );
     }
 

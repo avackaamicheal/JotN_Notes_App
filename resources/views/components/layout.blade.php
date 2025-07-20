@@ -39,8 +39,10 @@
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo/Branding -->
             <div class="flex items-center space-x-2">
-                <i class="bi bi-journal-bookmark-fill text-2xl text-primary-600 dark:text-primary-400"></i>
-                <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">JotN</h1>
+                <a href="{{ route('teams.index') }}">
+                    <i class="bi bi-journal-bookmark-fill text-2xl text-primary-600 dark:text-primary-400"></i>
+                    <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">JotN</h1>
+                </a>
             </div>
 
             <!-- Page Title -->
@@ -51,7 +53,7 @@
             <!-- User Dropdown -->
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
-                    <span class="text-gray-700 dark:text-gray-300">{{ Str::title(Auth::user()->name) }}</span>
+                    <span class="text-gray-700 dark:text-gray-300">Welcome, {{ Str::title(Auth::user()->name) }}</span>
                     <i class="fas fa-chevron-down text-gray-500 dark:text-gray-400 transition-transform duration-200" :class="{ 'transform rotate-180': open }"></i>
                 </button>
 
