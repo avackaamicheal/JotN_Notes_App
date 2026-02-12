@@ -25,12 +25,13 @@ class LoginController extends Controller
             $request->session()->regenerate();
             return redirect()->intended('teams');
 
-
-            return back()
-            ->withInput($request->only('email'))
-            ->withErrors([
-                'email'=> 'The provided credentials do not match'
-            ]);
         }
+        
+        return back()
+        ->withInput($request->only('email'))
+        ->withErrors([
+            'email'=> 'The provided credentials do not match'
+        ]);
+
     }
 }
