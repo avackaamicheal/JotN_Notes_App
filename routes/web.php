@@ -1,12 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NoteController;
-use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\auth\LogoutController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EmailsController;
+
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\TeamController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [RegisterController::class,'create'])->name('register');
 Route::post('/register', [RegisterController::class,'store'])->name('register.store');
